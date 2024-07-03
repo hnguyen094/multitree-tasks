@@ -7,13 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B2F48EDE2C35951E00D39F29 /* TaskNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2F48EDD2C35951600D39F29 /* TaskNode.swift */; };
+		B2F48EE22C3599F000D39F29 /* NodeBag.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2F48EE12C3599E400D39F29 /* NodeBag.swift */; };
 		B2FB1C142C359220000A04B0 /* multitree_tasksApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FB1C132C359220000A04B0 /* multitree_tasksApp.swift */; };
 		B2FB1C162C359220000A04B0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FB1C152C359220000A04B0 /* ContentView.swift */; };
 		B2FB1C182C359222000A04B0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2FB1C172C359222000A04B0 /* Assets.xcassets */; };
 		B2FB1C1C2C359222000A04B0 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2FB1C1B2C359222000A04B0 /* Preview Assets.xcassets */; };
+		B2FB1C242C359365000A04B0 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = B2FB1C232C359365000A04B0 /* ComposableArchitecture */; };
+		B2FB1C292C35945A000A04B0 /* NthCore in Frameworks */ = {isa = PBXBuildFile; productRef = B2FB1C282C35945A000A04B0 /* NthCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B2F48EDD2C35951600D39F29 /* TaskNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskNode.swift; sourceTree = "<group>"; };
+		B2F48EE12C3599E400D39F29 /* NodeBag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodeBag.swift; sourceTree = "<group>"; };
 		B2FB1C102C359220000A04B0 /* multitree-tasks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "multitree-tasks.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B2FB1C132C359220000A04B0 /* multitree_tasksApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = multitree_tasksApp.swift; sourceTree = "<group>"; };
 		B2FB1C152C359220000A04B0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -27,12 +33,30 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B2FB1C292C35945A000A04B0 /* NthCore in Frameworks */,
+				B2FB1C242C359365000A04B0 /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B2F48EDB2C3594F700D39F29 /* tca.dependencies */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = tca.dependencies;
+			sourceTree = "<group>";
+		};
+		B2F48EDC2C35950E00D39F29 /* tca */ = {
+			isa = PBXGroup;
+			children = (
+				B2F48EE12C3599E400D39F29 /* NodeBag.swift */,
+				B2F48EDD2C35951600D39F29 /* TaskNode.swift */,
+			);
+			path = tca;
+			sourceTree = "<group>";
+		};
 		B2FB1C072C359220000A04B0 = {
 			isa = PBXGroup;
 			children = (
@@ -52,6 +76,8 @@
 		B2FB1C122C359220000A04B0 /* multitree-tasks */ = {
 			isa = PBXGroup;
 			children = (
+				B2F48EDC2C35950E00D39F29 /* tca */,
+				B2F48EDB2C3594F700D39F29 /* tca.dependencies */,
 				B2FB1C132C359220000A04B0 /* multitree_tasksApp.swift */,
 				B2FB1C152C359220000A04B0 /* ContentView.swift */,
 				B2FB1C172C359222000A04B0 /* Assets.xcassets */,
@@ -85,6 +111,10 @@
 			dependencies = (
 			);
 			name = "multitree-tasks";
+			packageProductDependencies = (
+				B2FB1C232C359365000A04B0 /* ComposableArchitecture */,
+				B2FB1C282C35945A000A04B0 /* NthCore */,
+			);
 			productName = "multitree-tasks";
 			productReference = B2FB1C102C359220000A04B0 /* multitree-tasks.app */;
 			productType = "com.apple.product-type.application";
@@ -113,6 +143,10 @@
 				Base,
 			);
 			mainGroup = B2FB1C072C359220000A04B0;
+			packageReferences = (
+				B2FB1C222C359365000A04B0 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+				B2FB1C252C35942F000A04B0 /* XCLocalSwiftPackageReference "swift-nth-core" */,
+			);
 			productRefGroup = B2FB1C112C359220000A04B0 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -139,6 +173,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B2F48EE22C3599F000D39F29 /* NodeBag.swift in Sources */,
+				B2F48EDE2C35951E00D39F29 /* TaskNode.swift in Sources */,
 				B2FB1C162C359220000A04B0 /* ContentView.swift in Sources */,
 				B2FB1C142C359220000A04B0 /* multitree_tasksApp.swift in Sources */,
 			);
@@ -361,6 +397,36 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		B2FB1C252C35942F000A04B0 /* XCLocalSwiftPackageReference "swift-nth-core" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "swift-nth-core";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B2FB1C222C359365000A04B0 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.11.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B2FB1C232C359365000A04B0 /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B2FB1C222C359365000A04B0 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
+		};
+		B2FB1C282C35945A000A04B0 /* NthCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = NthCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B2FB1C082C359220000A04B0 /* Project object */;
 }
