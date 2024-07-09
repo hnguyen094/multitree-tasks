@@ -6,42 +6,40 @@
 //
 
 import ComposableArchitecture
-
 import OrderedCollections
 
 @Reducer
 struct TaskNode<ID> where ID: Hashable {
-    struct Detail: Equatable {
-
+    struct Detail: Hashable {
+        var title: String
     }
 
     @ObservableState
-    struct State: Equatable {
+    struct State: Identifiable, Hashable {
         var id: ID
-        var children: OrderedSet<ID>
+        var childrenIDs: OrderedSet<ID> = .init()
+        var detail: Detail
+
+        var offspringIDs: Set<ID> = .init()
+        var ancestorIDs: Set<ID> = .init()
+
+        init(id: ID, detail: Detail) {
+            self.id = id
+            self.detail = detail
+            offspringIDs.insert(id)
+            ancestorIDs.insert(id)
+        }
     }
 
     enum Action {
-        case add(_ child: ID, _ position: Int?)
-        case update(_ child: ID, _ position: Int)
-        case remove(_ child: ID)
+        case changeTitle(String)
     }
 
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-            case let .add(child, maybePosition):
-                // TODO: validate acyclic nature here
-                let (success, index) = switch maybePosition {
-                case .some(let position): state.children.insert(child, at: position)
-                case .none: state.children.append(child)
-                }
-                return .none
-            case let .update(child, position):
-                state.children.update(child, at: position)
-                return .none
-            case .remove(let child):
-                state.children.remove(child)
+            case .changeTitle(let newTitle):
+                state.detail.title = newTitle
                 return .none
             }
         }

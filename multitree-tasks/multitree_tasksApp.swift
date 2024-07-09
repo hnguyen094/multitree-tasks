@@ -6,12 +6,16 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
 
 @main
 struct multitree_tasksApp: App {
+    var store: StoreOf<Root> = .init(initialState: .init()) {
+        Root()
+    }
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(store: store)
         }
     }
 }

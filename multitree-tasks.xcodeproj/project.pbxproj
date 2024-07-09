@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B29C852D2C3DC99F00452828 /* Root.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29C852C2C3DC99E00452828 /* Root.swift */; };
 		B2F48EDE2C35951E00D39F29 /* TaskNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2F48EDD2C35951600D39F29 /* TaskNode.swift */; };
-		B2F48EE22C3599F000D39F29 /* NodeBag.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2F48EE12C3599E400D39F29 /* NodeBag.swift */; };
+		B2F48EE22C3599F000D39F29 /* TaskNodeBag.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2F48EE12C3599E400D39F29 /* TaskNodeBag.swift */; };
 		B2FB1C142C359220000A04B0 /* multitree_tasksApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FB1C132C359220000A04B0 /* multitree_tasksApp.swift */; };
 		B2FB1C162C359220000A04B0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FB1C152C359220000A04B0 /* ContentView.swift */; };
 		B2FB1C182C359222000A04B0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2FB1C172C359222000A04B0 /* Assets.xcassets */; };
@@ -18,8 +19,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B29C852C2C3DC99E00452828 /* Root.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Root.swift; sourceTree = "<group>"; };
 		B2F48EDD2C35951600D39F29 /* TaskNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskNode.swift; sourceTree = "<group>"; };
-		B2F48EE12C3599E400D39F29 /* NodeBag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodeBag.swift; sourceTree = "<group>"; };
+		B2F48EE12C3599E400D39F29 /* TaskNodeBag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskNodeBag.swift; sourceTree = "<group>"; };
 		B2FB1C102C359220000A04B0 /* multitree-tasks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "multitree-tasks.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B2FB1C132C359220000A04B0 /* multitree_tasksApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = multitree_tasksApp.swift; sourceTree = "<group>"; };
 		B2FB1C152C359220000A04B0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -51,7 +53,8 @@
 		B2F48EDC2C35950E00D39F29 /* tca */ = {
 			isa = PBXGroup;
 			children = (
-				B2F48EE12C3599E400D39F29 /* NodeBag.swift */,
+				B29C852C2C3DC99E00452828 /* Root.swift */,
+				B2F48EE12C3599E400D39F29 /* TaskNodeBag.swift */,
 				B2F48EDD2C35951600D39F29 /* TaskNode.swift */,
 			);
 			path = tca;
@@ -173,10 +176,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B2F48EE22C3599F000D39F29 /* NodeBag.swift in Sources */,
+				B2F48EE22C3599F000D39F29 /* TaskNodeBag.swift in Sources */,
 				B2F48EDE2C35951E00D39F29 /* TaskNode.swift in Sources */,
 				B2FB1C162C359220000A04B0 /* ContentView.swift in Sources */,
 				B2FB1C142C359220000A04B0 /* multitree_tasksApp.swift in Sources */,
+				B29C852D2C3DC99F00452828 /* Root.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
