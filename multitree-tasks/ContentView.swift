@@ -64,18 +64,17 @@ struct DetailView: View {
             }
         }        
         .navigationTitle("<Current Scope>")
-        .navigationBarTitleDisplayMode(.inline)
     }
 
     var regular: some View {
         NavigationStack {
-            VStack {
-                Divider()
-                    .padding(.horizontal, -100)
+//            VStack {
+//                Divider()
+//                    .padding(.horizontal, -100)
                 ScrollView(.horizontal) {
                     LazyHStack {
                         ForEach(0..<10) { _ in
-                            List(0..<10) {
+                            List(0..<100) {
                                 Text("blah blah \($0)")
                             }
                             .listStyle(.plain)
@@ -84,8 +83,7 @@ struct DetailView: View {
                         }
                     }
                 }
-            }
-            .toolbarBackgroundVisibility(.visible, for: .automatic)
+//            }
             .toolbar {
                 ToolbarItem(placement: .navigation) {
                     Button("Back", systemImage: "chevron.left") { }
