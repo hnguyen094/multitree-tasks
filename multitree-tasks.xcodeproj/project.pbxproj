@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B22A773E2C3F9D6200FE589D /* CheckboxStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22A773D2C3F9D6200FE589D /* CheckboxStyle.swift */; };
 		B29C852D2C3DC99F00452828 /* Root.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29C852C2C3DC99E00452828 /* Root.swift */; };
 		B2F48EDE2C35951E00D39F29 /* TaskNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2F48EDD2C35951600D39F29 /* TaskNode.swift */; };
 		B2F48EE22C3599F000D39F29 /* TaskNodeBag.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2F48EE12C3599E400D39F29 /* TaskNodeBag.swift */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B22A773D2C3F9D6200FE589D /* CheckboxStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxStyle.swift; sourceTree = "<group>"; };
 		B29C852C2C3DC99E00452828 /* Root.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Root.swift; sourceTree = "<group>"; };
 		B2F48EDD2C35951600D39F29 /* TaskNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskNode.swift; sourceTree = "<group>"; };
 		B2F48EE12C3599E400D39F29 /* TaskNodeBag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskNodeBag.swift; sourceTree = "<group>"; };
@@ -41,6 +43,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B22A773C2C3F9D4F00FE589D /* swiftui */ = {
+			isa = PBXGroup;
+			children = (
+				B22A773D2C3F9D6200FE589D /* CheckboxStyle.swift */,
+			);
+			path = swiftui;
+			sourceTree = "<group>";
+		};
 		B2F48EDB2C3594F700D39F29 /* tca.dependencies */ = {
 			isa = PBXGroup;
 			children = (
@@ -77,6 +87,7 @@
 		B2FB1C122C359220000A04B0 /* multitree-tasks */ = {
 			isa = PBXGroup;
 			children = (
+				B22A773C2C3F9D4F00FE589D /* swiftui */,
 				B2F48EDC2C35950E00D39F29 /* tca */,
 				B2F48EDB2C3594F700D39F29 /* tca.dependencies */,
 				B2FB1C132C359220000A04B0 /* multitree_tasksApp.swift */,
@@ -176,6 +187,7 @@
 				B2F48EDE2C35951E00D39F29 /* TaskNode.swift in Sources */,
 				B2FB1C162C359220000A04B0 /* ContentView.swift in Sources */,
 				B2FB1C142C359220000A04B0 /* multitree_tasksApp.swift in Sources */,
+				B22A773E2C3F9D6200FE589D /* CheckboxStyle.swift in Sources */,
 				B29C852D2C3DC99F00452828 /* Root.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

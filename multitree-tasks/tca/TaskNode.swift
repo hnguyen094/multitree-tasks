@@ -12,6 +12,7 @@ import OrderedCollections
 struct TaskNode<ID> where ID: Hashable {
     struct Detail: Hashable {
         var title: String
+        var completed: Bool = false
     }
 
     @ObservableState

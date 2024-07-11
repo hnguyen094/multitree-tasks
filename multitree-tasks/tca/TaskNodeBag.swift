@@ -23,6 +23,7 @@ struct TaskNodeBag<ID> where ID: Hashable {
     enum Action {
         case create(TaskNode<ID>.Detail, ID?)
         case link(_ parent: ID, _ child: ID)
+        case markCompleted(ID, Bool)
         case tasks(IdentifiedActionOf<TaskNode<ID>>)
     }
 
@@ -43,6 +44,9 @@ struct TaskNodeBag<ID> where ID: Hashable {
                     link(&state, parent: parent, child: child)
                 }
                 state.roots.remove(child)
+                return .none
+            case .markCompleted(let id, let completed):
+                markComplete(&state, id: id, completed: completed)
                 return .none
             case .tasks:
                 return .none
@@ -82,5 +86,12 @@ struct TaskNodeBag<ID> where ID: Hashable {
         parentNode.offspringIDs.formUnion(childNode.offspringIDs)
         childNode.ancestorIDs.formUnion(parentNode.ancestorIDs)
         parentNode.childrenIDs.append(child)
+    }
+
+    func markComplete(_ state: inout State, id: ID, completed: Bool) {
+        for child in state.tasks[id: id]!.offspringIDs {
+            state.tasks[id: child]!.detail.completed = completed
+        }
+        state.tasks[id: id]!.detail.completed = completed
     }
 }

@@ -14,17 +14,30 @@ struct ContentView: View {
         let bag = store.scope(state: \.bag, action: \.bag)
         let selectionBinding = $store.selectedIDs.sending(\.selectedIDsChanged)
         NavigationSplitView {
-            List(bag.roots, id: \.self, selection: selectionBinding) { id in
+            List(selection: selectionBinding) {
+                ForEach(bag.roots, id: \.self) { id in
                     Text(bag.tasks[id: id]!.detail.title)
+                }
+                Section("By Date") {
+                    EmptyView()
+                }
             }
+
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button("Add", systemImage: "plus") {
                         store.send(.addTaskRequest(true))
                     }
                 }
+
+                ToolbarItem(placement: .primaryAction) {
+                    Button("Cross", systemImage: "multiply") {
+                        store.send(.changeWorkingTitle("Generated"))
+                        store.send(.addTask)
+                    }
+                }
             }
-            .navigationTitle("Root")
+            .navigationTitle("Roots")
         } detail: {
             DetailView(store: store)
         }
@@ -39,10 +52,22 @@ struct ContentView: View {
             }
         } message: {
             if let last = store.path.last {
-                Text("Add a node to \"\(store.bag.tasks[id: last]!.detail.title).\"")
+                Text("Add a node to **\(store.bag.tasks[id: last]!.detail.title).**")
             } else {
-                Text("Add a node to Root.")
+                Text("Add a node to **Root**.")
             }
+        }
+    }
+
+    @ViewBuilder
+    var repeatCountSlider: some View {
+        let binding = Binding<Float> {
+            Float(store.repeatCount)
+        } set: {
+            store.send(.changeRepeatCount(Int($0)))
+        }
+        Slider(value: binding, in: 1...100) {
+            Text("Repeat")
         }
     }
 }
@@ -52,79 +77,61 @@ struct DetailView: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
 
     var body: some View {
-        switch horizontalSizeClass {
-        case .compact: compact
-        case .regular: regular
-        default: fatalError()
-        }
+        columns
     }
 
-    var compact: some View {
+    @ViewBuilder
+    var stack: some View {
         Group {
             switch store.selectedIDs.count {
             case 0: Text("No node selected.")
             case 2... : Text("Too many nodes selected.")
             case 1:
-                List(0..<10) { _ in
-                    ScrollView {
-                        List(0..<100) { i in
-                            Text("Cool row item \(i)")
-                        }
-                    }
+                let selectedTask = store.bag.tasks[id: store.selectedIDs.first!]!
+                List(selectedTask.childrenIDs, id: \.self) { id in
+                    Text(store.bag.tasks[id: id]!.detail.title)
                 }
             default: fatalError()
             }
-        }        
+        }
         .navigationTitle(title)
     }
 
-    var regular: some View {
+    @ViewBuilder
+    var columns: some View {
         NavigationStack {
             ScrollView(.horizontal) {
-                LazyHStack {
+                HStack(spacing: 0) {
                     ForEach(Array(store.path.enumerated()), id: \.offset) { index, id in
-                        let children = store.bag.tasks[id: id]!.childrenIDs
-                        switch children.isEmpty {
-                        case true: 
-                            Text("End of Branch")
-                                .font(.headline)
-                                .frame(idealWidth: 320, maxHeight: .infinity)
-                        case false:
-                            VStack {
-                                let selected = store.path.count - 1 > index
-                                ? Binding<Set<UUID>>.constant(.init([store.path[index+1]]))
-                                : Binding<Set<UUID>>.constant(.init())
-                                List(children, id: \.self, selection: selected) { id in
-                                    Button(store.bag.tasks[id: id]!.detail.title) {
-                                        store.send(.pathChanged(index, id))
-                                    }
-                                }
-                                .listStyle(.plain)
-                                .frame(idealWidth: 320, maxHeight: .infinity)
-                                if children.count == 1 {
-                                    Text("1 Node")
-                                } else {
-                                    Text("\(children.count) Nodes")
-                                }
-                            }
-                        }
+                        column(column: index, id: id)
                         Divider()
                     }
                 }
+                .scrollTargetLayout()
             }
+            .scrollPosition(id: $store.scrollTargetColumn.sending(\.scrollTargetChanged), anchor: .bottomTrailing)
             .toolbar {
-                ToolbarItem(placement: .navigation) {
+                ToolbarItem(placement: .topBarLeading) {
                     LabeledContent("Root") {
                         Text(title)
                     }
                     .font(.headline)
                 }
-                ToolbarItem(placement: .primaryAction) {
-                    Button("Add", systemImage: "plus") {
+
+                ToolbarItemGroup(placement: .primaryAction) {
+
+                    Button("Add One", systemImage: "plus") {
                         store.send(.addTaskRequest(true))
                     }
-                }
-                ToolbarItem(placement: .primaryAction) {
+                    Button("Add Multiple", systemImage: "plus.square.on.square") {
+//                        store.send(.addTaskRequest(true))
+                    }
+                    Button("Cross", systemImage: "multiply") {
+                        store.send(.changeWorkingTitle("Generated"))
+                        store.send(.addTask)
+                    }
+                    Button("Search", systemImage: "magnifyingglass") { }
+                    Button("Search", systemImage: "magnifyingglass") { }
                     Button("Search", systemImage: "magnifyingglass") { }
                 }
                 if !store.path.isEmpty {
@@ -149,11 +156,60 @@ struct DetailView: View {
     }
 
     @ViewBuilder
+    func column(column: Int, id: UUID) -> some View {
+        let children = store.bag.tasks[id: id]!.childrenIDs
+        switch children.count {
+        case 0:
+            Text("End of Branch")
+                .font(.headline)
+                .rotationEffect(.degrees(90))
+        case let count:
+            VStack {
+                let selected: Set<UUID> = (store.path.count - 1 > column
+                                           ? .init([store.path[column + 1]]): .init())
+
+                List(children, id: \.self, selection: .constant(selected)) { id in
+                    item(column: column, id: id)
+                }
+                .listStyle(.plain)
+                .frame(idealWidth: 320, maxHeight: .infinity)
+
+                let text = switch count {
+                case 1: "1 Node"
+                default: "\(count) Nodes"
+                }
+                Text(text)
+                    .font(.headline)
+            }
+        }
+    }
+
+    @ViewBuilder
+    func item(column: Int, id: UUID) -> some View {
+        Button {
+            store.send(.pathChanged(column, id), animation: .easeOut)
+        } label: {
+            let task = store.bag.tasks[id: id]!
+            HStack {
+                let children = store.bag.tasks[id: id]!.childrenIDs
+                    .map({ store.bag.tasks[id: $0]! })
+                let sources = Binding<[TaskNode<UUID>.State]>.constant(children)
+                Toggle(sources: sources, isOn: \.detail.completed) {
+                    Text("Completed")
+                }
+                .toggleStyle(CheckboxStyle())
+                Text(task.detail.title)
+                Spacer()
+                Text("(\(task.childrenIDs.count))")
+            }
+        }
+    }
+
+    @ViewBuilder
     var toolbarTaskDetail: some View {
         let task = store.bag.tasks[id: store.path.last!]!
         HStack {
             LabeledContent("Node") {
-
                 ScrollView(.horizontal) {
                     Text(task.detail.title)
                 }
@@ -165,7 +221,6 @@ struct DetailView: View {
                 }
             }
         }
-        .scrollIndicators(.never)
     }
 }
 
