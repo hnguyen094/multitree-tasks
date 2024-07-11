@@ -8,11 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		B22A773E2C3F9D6200FE589D /* CheckboxStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22A773D2C3F9D6200FE589D /* CheckboxStyle.swift */; };
+		B292490F2C408493003319A0 /* RootDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B292490E2C408493003319A0 /* RootDetailView.swift */; };
 		B29C852D2C3DC99F00452828 /* Root.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29C852C2C3DC99E00452828 /* Root.swift */; };
 		B2F48EDE2C35951E00D39F29 /* TaskNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2F48EDD2C35951600D39F29 /* TaskNode.swift */; };
 		B2F48EE22C3599F000D39F29 /* TaskNodeBag.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2F48EE12C3599E400D39F29 /* TaskNodeBag.swift */; };
 		B2FB1C142C359220000A04B0 /* multitree_tasksApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FB1C132C359220000A04B0 /* multitree_tasksApp.swift */; };
-		B2FB1C162C359220000A04B0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FB1C152C359220000A04B0 /* ContentView.swift */; };
+		B2FB1C162C359220000A04B0 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2FB1C152C359220000A04B0 /* RootView.swift */; };
 		B2FB1C182C359222000A04B0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2FB1C172C359222000A04B0 /* Assets.xcassets */; };
 		B2FB1C1C2C359222000A04B0 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B2FB1C1B2C359222000A04B0 /* Preview Assets.xcassets */; };
 		B2FB1C242C359365000A04B0 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = B2FB1C232C359365000A04B0 /* ComposableArchitecture */; };
@@ -20,12 +21,13 @@
 
 /* Begin PBXFileReference section */
 		B22A773D2C3F9D6200FE589D /* CheckboxStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxStyle.swift; sourceTree = "<group>"; };
+		B292490E2C408493003319A0 /* RootDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootDetailView.swift; sourceTree = "<group>"; };
 		B29C852C2C3DC99E00452828 /* Root.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Root.swift; sourceTree = "<group>"; };
 		B2F48EDD2C35951600D39F29 /* TaskNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskNode.swift; sourceTree = "<group>"; };
 		B2F48EE12C3599E400D39F29 /* TaskNodeBag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskNodeBag.swift; sourceTree = "<group>"; };
 		B2FB1C102C359220000A04B0 /* multitree-tasks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "multitree-tasks.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B2FB1C132C359220000A04B0 /* multitree_tasksApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = multitree_tasksApp.swift; sourceTree = "<group>"; };
-		B2FB1C152C359220000A04B0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B2FB1C152C359220000A04B0 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		B2FB1C172C359222000A04B0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B2FB1C192C359222000A04B0 /* multitree_tasks.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = multitree_tasks.entitlements; sourceTree = "<group>"; };
 		B2FB1C1B2C359222000A04B0 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -49,13 +51,6 @@
 				B22A773D2C3F9D6200FE589D /* CheckboxStyle.swift */,
 			);
 			path = swiftui;
-			sourceTree = "<group>";
-		};
-		B2F48EDB2C3594F700D39F29 /* tca.dependencies */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = tca.dependencies;
 			sourceTree = "<group>";
 		};
 		B2F48EDC2C35950E00D39F29 /* tca */ = {
@@ -89,9 +84,9 @@
 			children = (
 				B22A773C2C3F9D4F00FE589D /* swiftui */,
 				B2F48EDC2C35950E00D39F29 /* tca */,
-				B2F48EDB2C3594F700D39F29 /* tca.dependencies */,
 				B2FB1C132C359220000A04B0 /* multitree_tasksApp.swift */,
-				B2FB1C152C359220000A04B0 /* ContentView.swift */,
+				B2FB1C152C359220000A04B0 /* RootView.swift */,
+				B292490E2C408493003319A0 /* RootDetailView.swift */,
 				B2FB1C172C359222000A04B0 /* Assets.xcassets */,
 				B2FB1C192C359222000A04B0 /* multitree_tasks.entitlements */,
 				B2FB1C1A2C359222000A04B0 /* Preview Content */,
@@ -185,9 +180,10 @@
 			files = (
 				B2F48EE22C3599F000D39F29 /* TaskNodeBag.swift in Sources */,
 				B2F48EDE2C35951E00D39F29 /* TaskNode.swift in Sources */,
-				B2FB1C162C359220000A04B0 /* ContentView.swift in Sources */,
+				B2FB1C162C359220000A04B0 /* RootView.swift in Sources */,
 				B2FB1C142C359220000A04B0 /* multitree_tasksApp.swift in Sources */,
 				B22A773E2C3F9D6200FE589D /* CheckboxStyle.swift in Sources */,
+				B292490F2C408493003319A0 /* RootDetailView.swift in Sources */,
 				B29C852D2C3DC99F00452828 /* Root.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

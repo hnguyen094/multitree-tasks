@@ -21,7 +21,7 @@ struct TaskNodeBag<ID> where ID: Hashable {
     }
 
     enum Action {
-        case create(TaskNode<ID>.Detail, ID?)
+        case create(TaskNode<ID>.Detail, _ parent: ID?)
         case link(_ parent: ID, _ child: ID)
         case markCompleted(ID, Bool)
         case tasks(IdentifiedActionOf<TaskNode<ID>>)
@@ -34,10 +34,10 @@ struct TaskNodeBag<ID> where ID: Hashable {
                 let id = generator()
                 let task: TaskNode<ID>.State = .init(id: id, detail: detail)
                 state.tasks.append(task)
-                state.roots.append(id)
                 if let parent = maybeParent {
                     return .send(.link(parent, id))
                 }
+                state.roots.append(id)
                 return .none
             case .link(let parent, let child):
                 if validate(state, source: parent, destination: child) {

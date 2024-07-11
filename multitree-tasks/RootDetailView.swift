@@ -1,78 +1,14 @@
 //
-//  ContentView.swift
+//  RootDetailView.swift
 //  multitree-tasks
 //
-//  Created by hung on 7/3/24.
+//  Created by hung on 7/11/24.
 //
 
 import SwiftUI
 import ComposableArchitecture
 
-struct ContentView: View {
-    @Bindable var store: StoreOf<Root>
-    var body: some View {
-        let bag = store.scope(state: \.bag, action: \.bag)
-        let selectionBinding = $store.selectedIDs.sending(\.selectedIDsChanged)
-        NavigationSplitView {
-            List(selection: selectionBinding) {
-                ForEach(bag.roots, id: \.self) { id in
-                    Text(bag.tasks[id: id]!.detail.title)
-                }
-                Section("By Date") {
-                    EmptyView()
-                }
-            }
-
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button("Add", systemImage: "plus") {
-                        store.send(.addTaskRequest(true))
-                    }
-                }
-
-                ToolbarItem(placement: .primaryAction) {
-                    Button("Cross", systemImage: "multiply") {
-                        store.send(.changeWorkingTitle("Generated"))
-                        store.send(.addTask)
-                    }
-                }
-            }
-            .navigationTitle("Roots")
-        } detail: {
-            DetailView(store: store)
-        }
-        .alert("Create Node", isPresented: $store.addTask.sending(\.addTaskRequest)) {
-            TextField("Node Title", text: $store.workingTaskTitle.sending(\.changeWorkingTitle))
-            Button("Create") {
-                store.send(.addTask)
-            }
-            .disabled(store.workingTaskTitle.isEmpty)
-            Button("Cancel", role: .cancel) {
-                store.send(.addTaskRequest(false))
-            }
-        } message: {
-            if let last = store.path.last {
-                Text("Add a node to **\(store.bag.tasks[id: last]!.detail.title).**")
-            } else {
-                Text("Add a node to **Root**.")
-            }
-        }
-    }
-
-    @ViewBuilder
-    var repeatCountSlider: some View {
-        let binding = Binding<Float> {
-            Float(store.repeatCount)
-        } set: {
-            store.send(.changeRepeatCount(Int($0)))
-        }
-        Slider(value: binding, in: 1...100) {
-            Text("Repeat")
-        }
-    }
-}
-
-struct DetailView: View {
+struct RootDetailView: View {
     @Bindable var store: StoreOf<Root>
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
 
@@ -123,15 +59,13 @@ struct DetailView: View {
                     Button("Add One", systemImage: "plus") {
                         store.send(.addTaskRequest(true))
                     }
-                    Button("Add Multiple", systemImage: "plus.square.on.square") {
-//                        store.send(.addTaskRequest(true))
-                    }
                     Button("Cross", systemImage: "multiply") {
                         store.send(.changeWorkingTitle("Generated"))
                         store.send(.addTask)
                     }
-                    Button("Search", systemImage: "magnifyingglass") { }
-                    Button("Search", systemImage: "magnifyingglass") { }
+                    Button("Add Multiple", systemImage: "plus.square.on.square") {
+//                        store.send(.addTaskRequest(true))
+                    }
                     Button("Search", systemImage: "magnifyingglass") { }
                 }
                 if !store.path.isEmpty {
@@ -156,7 +90,7 @@ struct DetailView: View {
     }
 
     @ViewBuilder
-    func column(column: Int, id: UUID) -> some View {
+    func column(column: Int, id: Root.ID) -> some View {
         let children = store.bag.tasks[id: id]!.childrenIDs
         switch children.count {
         case 0:
@@ -165,7 +99,7 @@ struct DetailView: View {
                 .rotationEffect(.degrees(90))
         case let count:
             VStack {
-                let selected: Set<UUID> = (store.path.count - 1 > column
+                let selected: Set<Root.ID> = (store.path.count - 1 > column
                                            ? .init([store.path[column + 1]]): .init())
 
                 List(children, id: \.self, selection: .constant(selected)) { id in
@@ -185,7 +119,7 @@ struct DetailView: View {
     }
 
     @ViewBuilder
-    func item(column: Int, id: UUID) -> some View {
+    func item(column: Int, id: Root.ID) -> some View {
         Button {
             store.send(.pathChanged(column, id), animation: .easeOut)
         } label: {
@@ -193,14 +127,14 @@ struct DetailView: View {
             HStack {
                 let children = store.bag.tasks[id: id]!.childrenIDs
                     .map({ store.bag.tasks[id: $0]! })
-                let sources = Binding<[TaskNode<UUID>.State]>.constant(children)
+                let sources = Binding<[TaskNode<Root.ID>.State]>.constant(children)
                 Toggle(sources: sources, isOn: \.detail.completed) {
                     Text("Completed")
                 }
                 .toggleStyle(CheckboxStyle())
                 Text(task.detail.title)
                 Spacer()
-                Text("(\(task.childrenIDs.count))")
+                Text("(\(task.offspringIDs.count - 1))")
             }
         }
     }
@@ -222,10 +156,4 @@ struct DetailView: View {
             }
         }
     }
-}
-
-#Preview {
-    ContentView(store: .init(initialState: .init(), reducer: {
-        Root()
-    }))
 }

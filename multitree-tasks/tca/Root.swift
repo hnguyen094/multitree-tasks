@@ -12,11 +12,16 @@ import Foundation
 struct Root {
     @Dependency(\.uuid) var uuid
 
+    enum ID: Hashable {
+        case uuid(UUID)
+        case date(Date)
+    }
+
     @ObservableState
     struct State {
-        var bag: TaskNodeBag<UUID>.State = .init()
-        var selectedIDs: Set<UUID> = .init()
-        var path: [UUID] = .init()
+        var bag: TaskNodeBag<ID>.State = .init()
+        var selectedIDs: Set<ID> = .init()
+        var path: [ID] = .init()
 
         var scrollTargetColumn: Int? = .none
 
@@ -26,9 +31,9 @@ struct Root {
     }
 
     enum Action {
-        case bag(TaskNodeBag<UUID>.Action)
-        case selectedIDsChanged(Set<UUID>)
-        case pathChanged(_ column: Int, UUID)
+        case bag(TaskNodeBag<ID>.Action)
+        case selectedIDsChanged(Set<ID>)
+        case pathChanged(_ column: Int, ID)
 
         case scrollTargetChanged(Int?)
 
@@ -40,7 +45,7 @@ struct Root {
 
     var body: some ReducerOf<Self> {
         Scope(state: \.bag, action: \.bag) {
-            TaskNodeBag<UUID>(generator: uuid.callAsFunction)
+            TaskNodeBag<ID>(generator: { .uuid(uuid()) })
         }
         Reduce { state, action in
             switch action {
