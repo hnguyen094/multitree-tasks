@@ -15,21 +15,34 @@ struct ContentView: View {
         let selectionBinding = $store.selectedIDs.sending(\.selectedIDsChanged)
         NavigationSplitView {
             List(bag.roots, id: \.self, selection: selectionBinding) { id in
-                VStack {
                     Text(bag.tasks[id: id]!.detail.title)
-                    Text("\(id)")
-                }
             }
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button("Add", systemImage: "plus") {
-                        bag.send(.create(.init(title: "test")))
+                        store.send(.addTaskRequest(true))
                     }
                 }
             }
-            .navigationTitle("Multitree")
+            .navigationTitle("Root")
         } detail: {
             DetailView(store: store)
+        }
+        .alert("Create Node", isPresented: $store.addTask.sending(\.addTaskRequest)) {
+            TextField("Node Title", text: $store.workingTaskTitle.sending(\.changeWorkingTitle))
+            Button("Create") {
+                store.send(.addTask)
+            }
+            .disabled(store.workingTaskTitle.isEmpty)
+            Button("Cancel", role: .cancel) {
+                store.send(.addTaskRequest(false))
+            }
+        } message: {
+            if let last = store.path.last {
+                Text("Add a node to \"\(store.bag.tasks[id: last]!.detail.title).\"")
+            } else {
+                Text("Add a node to Root.")
+            }
         }
     }
 }
@@ -49,8 +62,8 @@ struct DetailView: View {
     var compact: some View {
         Group {
             switch store.selectedIDs.count {
-            case 0: Text("No task selected.")
-            case 2... : Text("Too many tasks selected.")
+            case 0: Text("No node selected.")
+            case 2... : Text("Too many nodes selected.")
             case 1:
                 List(0..<10) { _ in
                     ScrollView {
@@ -59,55 +72,100 @@ struct DetailView: View {
                         }
                     }
                 }
-                Text("Showing \(store.bag.tasks[id: store.selectedIDs.first!]!.detail.title)")
             default: fatalError()
             }
         }        
-        .navigationTitle("<Current Scope>")
+        .navigationTitle(title)
     }
 
     var regular: some View {
         NavigationStack {
-//            VStack {
-//                Divider()
-//                    .padding(.horizontal, -100)
-                ScrollView(.horizontal) {
-                    LazyHStack {
-                        ForEach(0..<10) { _ in
-                            List(0..<100) {
-                                Text("blah blah \($0)")
+            ScrollView(.horizontal) {
+                LazyHStack {
+                    ForEach(Array(store.path.enumerated()), id: \.offset) { index, id in
+                        let children = store.bag.tasks[id: id]!.childrenIDs
+                        switch children.isEmpty {
+                        case true: 
+                            Text("End of Branch")
+                                .font(.headline)
+                                .frame(idealWidth: 320, maxHeight: .infinity)
+                        case false:
+                            VStack {
+                                let selected = store.path.count - 1 > index
+                                ? Binding<Set<UUID>>.constant(.init([store.path[index+1]]))
+                                : Binding<Set<UUID>>.constant(.init())
+                                List(children, id: \.self, selection: selected) { id in
+                                    Button(store.bag.tasks[id: id]!.detail.title) {
+                                        store.send(.pathChanged(index, id))
+                                    }
+                                }
+                                .listStyle(.plain)
+                                .frame(idealWidth: 320, maxHeight: .infinity)
+                                if children.count == 1 {
+                                    Text("1 Node")
+                                } else {
+                                    Text("\(children.count) Nodes")
+                                }
                             }
-                            .listStyle(.plain)
-                            .frame(idealWidth: 320, maxHeight: .infinity)
-                            Divider()
                         }
+                        Divider()
                     }
                 }
-//            }
+            }
             .toolbar {
                 ToolbarItem(placement: .navigation) {
-                    Button("Back", systemImage: "chevron.left") { }
-                        .disabled(true)
-                }
-                ToolbarItem(placement: .navigation) {
-                    Button("Forward", systemImage: "chevron.right") { }
-                        .disabled(true)
-                }
-                ToolbarItem(placement: .navigation) {
-                    Text("<Current Scope>")
-                        .font(.headline)
+                    LabeledContent("Root") {
+                        Text(title)
+                    }
+                    .font(.headline)
                 }
                 ToolbarItem(placement: .primaryAction) {
-                    Button("Select") { }
-                }
-                ToolbarItem(placement: .primaryAction) {
-                    Button("Add", systemImage: "plus") { }
+                    Button("Add", systemImage: "plus") {
+                        store.send(.addTaskRequest(true))
+                    }
                 }
                 ToolbarItem(placement: .primaryAction) {
                     Button("Search", systemImage: "magnifyingglass") { }
                 }
+                if !store.path.isEmpty {
+                    ToolbarItem(placement: .bottomBar) {
+                        VStack {
+                            Divider()
+                            toolbarTaskDetail
+                        }
+                    }
+                }
             }
         }
+    }
+
+    var title: String {
+        switch store.selectedIDs.count {
+        case 0: "None Selected"
+        case let x where x > 1: "\(x) Selected"
+        case 1: store.bag.tasks[id: store.selectedIDs.first!]!.detail.title
+        default: "Error"
+        }
+    }
+
+    @ViewBuilder
+    var toolbarTaskDetail: some View {
+        let task = store.bag.tasks[id: store.path.last!]!
+        HStack {
+            LabeledContent("Node") {
+
+                ScrollView(.horizontal) {
+                    Text(task.detail.title)
+                }
+            }
+            Spacer()
+            LabeledContent("ID") {
+                ScrollView(.horizontal) {
+                    Text("\(task.id)")
+                }
+            }
+        }
+        .scrollIndicators(.never)
     }
 }
 

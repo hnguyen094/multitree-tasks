@@ -145,7 +145,6 @@
 			mainGroup = B2FB1C072C359220000A04B0;
 			packageReferences = (
 				B2FB1C222C359365000A04B0 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
-				B2FB1C252C35942F000A04B0 /* XCLocalSwiftPackageReference "swift-nth-core" */,
 			);
 			productRefGroup = B2FB1C112C359220000A04B0 /* Products */;
 			projectDirPath = "";
@@ -402,13 +401,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCLocalSwiftPackageReference section */
-		B2FB1C252C35942F000A04B0 /* XCLocalSwiftPackageReference "swift-nth-core" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = "swift-nth-core";
-		};
-/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
 		B2FB1C222C359365000A04B0 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {

@@ -21,7 +21,7 @@ struct TaskNodeBag<ID> where ID: Hashable {
     }
 
     enum Action {
-        case create(TaskNode<ID>.Detail)
+        case create(TaskNode<ID>.Detail, ID?)
         case link(_ parent: ID, _ child: ID)
         case tasks(IdentifiedActionOf<TaskNode<ID>>)
     }
@@ -29,11 +29,14 @@ struct TaskNodeBag<ID> where ID: Hashable {
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-            case .create(let detail):
+            case .create(let detail, let maybeParent):
                 let id = generator()
                 let task: TaskNode<ID>.State = .init(id: id, detail: detail)
                 state.tasks.append(task)
                 state.roots.append(id)
+                if let parent = maybeParent {
+                    return .send(.link(parent, id))
+                }
                 return .none
             case .link(let parent, let child):
                 if validate(state, source: parent, destination: child) {
@@ -78,5 +81,6 @@ struct TaskNodeBag<ID> where ID: Hashable {
         }
         parentNode.offspringIDs.formUnion(childNode.offspringIDs)
         childNode.ancestorIDs.formUnion(parentNode.ancestorIDs)
+        parentNode.childrenIDs.append(child)
     }
 }
