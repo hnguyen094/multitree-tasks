@@ -6,22 +6,18 @@
 //
 
 import ComposableArchitecture
-
 import OrderedCollections
 
 @Reducer
 struct TaskNodeBag<ID> where ID: Hashable {
-    var generator: () -> ID
-
     @ObservableState 
     struct State {
-//        @Shared(.inMemory("tasks"))
         var tasks: IdentifiedArrayOf<TaskNode<ID>.State> = .init()
         var roots: OrderedSet<ID> = .init()
     }
 
     enum Action {
-        case create(TaskNode<ID>.Detail, _ parent: ID?)
+        case create(ID, TaskNode<ID>.Detail, _ parent: ID?)
         case link(_ parent: ID, _ child: ID)
         case markCompleted(ID, Bool)
         case tasks(IdentifiedActionOf<TaskNode<ID>>)
@@ -30,8 +26,7 @@ struct TaskNodeBag<ID> where ID: Hashable {
     var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-            case .create(let detail, let maybeParent):
-                let id = generator()
+            case .create(let id, let detail, let maybeParent):
                 let task: TaskNode<ID>.State = .init(id: id, detail: detail)
                 state.tasks.append(task)
                 if let parent = maybeParent {
@@ -57,6 +52,7 @@ struct TaskNodeBag<ID> where ID: Hashable {
         }
     }
 
+    // TODO: is this correct?
     func validate(_ state: State, source: ID, destination: ID) -> Bool {
         guard source != destination,
               let sourceNode = state.tasks[id: source],
@@ -77,15 +73,16 @@ struct TaskNodeBag<ID> where ID: Hashable {
                 sourceNode.ancestorIDs.intersection(destinationNode.ancestorIDs).isEmpty
     }
 
+    // TODO: needs to handle reparenting also.
     func link(_ state: inout State, parent: ID, child: ID) {
-        var parentNode = state.tasks[id: parent]!, childNode = state.tasks[id: child]!
-        defer {
-            state.tasks[id: parent] = parentNode
-            state.tasks[id: child] = childNode
+        let parentNode = state.tasks[id: parent]!, childNode = state.tasks[id: child]!
+        for ancestor in parentNode.ancestorIDs {
+            state.tasks[id: ancestor]!.offspringIDs.formUnion(childNode.offspringIDs)
         }
-        parentNode.offspringIDs.formUnion(childNode.offspringIDs)
-        childNode.ancestorIDs.formUnion(parentNode.ancestorIDs)
-        parentNode.childrenIDs.append(child)
+        for offspring in childNode.offspringIDs {
+            state.tasks[id: offspring]!.ancestorIDs.formUnion(parentNode.ancestorIDs)
+        }
+        state.tasks[id: parent]!.childrenIDs.append(child)
     }
 
     func markComplete(_ state: inout State, id: ID, completed: Bool) {
@@ -93,5 +90,15 @@ struct TaskNodeBag<ID> where ID: Hashable {
             state.tasks[id: child]!.detail.completed = completed
         }
         state.tasks[id: id]!.detail.completed = completed
+    }
+
+    func applyDownwardsRecursive(_ state: inout State,
+                               next current: ID,
+                               action: @escaping (inout TaskNode<ID>.State) -> Void
+    ) {
+        action(&state.tasks[id: current]!)
+        for child in state.tasks[id: current]!.childrenIDs {
+            applyDownwardsRecursive(&state, next: child, action: action)
+        }
     }
 }

@@ -32,15 +32,15 @@ struct TaskNode<ID> where ID: Hashable {
         }
     }
 
-    enum Action {
-        case changeTitle(String)
+    enum Action: BindableAction {
+        case binding(BindingAction<State>)
     }
 
     var body: some ReducerOf<Self> {
+        BindingReducer()
         Reduce { state, action in
             switch action {
-            case .changeTitle(let newTitle):
-                state.detail.title = newTitle
+            case .binding:
                 return .none
             }
         }

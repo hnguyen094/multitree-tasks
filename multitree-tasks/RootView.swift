@@ -12,13 +12,14 @@ struct RootView: View {
     @Bindable var store: StoreOf<Root>
     var body: some View {
         let bag = store.scope(state: \.bag, action: \.bag)
-        let selectionBinding = $store.selectedIDs.sending(\.selectedIDsChanged)
         NavigationSplitView {
-            List(selection: selectionBinding) {
-                ForEach(bag.roots, id: \.self) { id in
-                    Text(bag.tasks[id: id]!.detail.title)
+            List(selection: $store.selectedIDs) {
+                Section("Root Nodes") {
+                    ForEach(bag.roots, id: \.self) { id in
+                        Text(bag.tasks[id: id]!.detail.title)
+                    }
                 }
-                Section("By Date") {
+                Section("Dated") {
                     EmptyView()
                 }
             }
@@ -26,29 +27,29 @@ struct RootView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button("Add", systemImage: "plus") {
-                        store.send(.addTaskRequest(true))
+                        store.send(.set(\.addTask, true))
                     }
                 }
 
                 ToolbarItem(placement: .primaryAction) {
                     Button("Cross", systemImage: "multiply") {
-                        store.send(.changeWorkingTitle("Generated"))
+                        store.send(.set(\.workingTaskTitle, "Generated"))
                         store.send(.addTask)
                     }
                 }
             }
-            .navigationTitle("Roots")
+            .navigationTitle("Home")
         } detail: {
             RootDetailView(store: store)
         }
-        .alert("Create Node", isPresented: $store.addTask.sending(\.addTaskRequest)) {
-            TextField("Node Title", text: $store.workingTaskTitle.sending(\.changeWorkingTitle))
+        .alert("Create Node", isPresented: $store.addTask) {
+            TextField("Node Title", text: $store.workingTaskTitle)
             Button("Create") {
                 store.send(.addTask)
             }
             .disabled(store.workingTaskTitle.isEmpty)
             Button("Cancel", role: .cancel) {
-                store.send(.addTaskRequest(false))
+                store.send(.set(\.addTask, false))
             }
         } message: {
             if let last = store.path.last {
@@ -64,7 +65,7 @@ struct RootView: View {
         let binding = Binding<Float> {
             Float(store.repeatCount)
         } set: {
-            store.send(.changeRepeatCount(Int($0)))
+            store.send(.set(\.repeatCount, Int($0)))
         }
         Slider(value: binding, in: 1...100) {
             Text("Repeat")

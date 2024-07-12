@@ -10,76 +10,74 @@ import Foundation
 
 @Reducer
 struct Root {
-    @Dependency(\.uuid) var uuid
-
     enum ID: Hashable {
         case uuid(UUID)
         case date(Date)
+    }
+
+    @Reducer
+    enum Destination {
+        case add(Node<ID>.Create)
+        case edit(Node<ID>.Edit)
+        case move
     }
 
     @ObservableState
     struct State {
         var bag: TaskNodeBag<ID>.State = .init()
         var selectedIDs: Set<ID> = .init()
-        var path: [ID] = .init()
+        var path: StackState<ID> = .init()
 
-        var scrollTargetColumn: Int? = .none
-
+        var scrollTargetColumn: ID? = .none
         var addTask: Bool = false
         var workingTaskTitle: String = ""
         var repeatCount: Int = 1
+
+        @Presents var destination: Destination.State?
     }
 
-    enum Action {
+    enum Action: BindableAction {
+        case binding(BindingAction<State>)
+        case destination(PresentationAction<Destination.Action>)
+
         case bag(TaskNodeBag<ID>.Action)
-        case selectedIDsChanged(Set<ID>)
-        case pathChanged(_ column: Int, ID)
+        case itemSelected(StackElementID, _ newID: ID)
 
-        case scrollTargetChanged(Int?)
-
-        case addTaskRequest(Bool)
-        case changeWorkingTitle(String)
-        case changeRepeatCount(Int)
         case addTask
     }
 
     var body: some ReducerOf<Self> {
         Scope(state: \.bag, action: \.bag) {
-            TaskNodeBag<ID>(generator: { .uuid(uuid()) })
+            TaskNodeBag<ID>()
         }
+        BindingReducer()
         Reduce { state, action in
             switch action {
-            case .bag: return .none
-            case .selectedIDsChanged(let ids):
-                state.selectedIDs = ids
+            case .binding(\.selectedIDs):
+                let ids = state.selectedIDs
+                state.path.removeAll()
                 if ids.count == 1 {
-                    state.path = [ids.first!]
-                } else {
-                    state.path = []
+                    state.path.append(ids.first!)
                 }
                 return .none
-            case .pathChanged(let column, let id):
-                state.path.removeSubrange(column+1..<state.path.count)
+            case .itemSelected(let parentStackID, let id):
+                state.path.pop(to: parentStackID)
                 state.path.append(id)
-                state.scrollTargetColumn = state.path.count - 1
-                return .none
-            case .scrollTargetChanged(let newValue):
-                state.scrollTargetColumn = newValue
-                return .none
-            case .addTaskRequest(let show):
-                state.addTask = show
-                return .none
-            case .changeWorkingTitle(let title):
-                state.workingTaskTitle = title
-                return .none
-            case .changeRepeatCount(let repeatCount):
-                state.repeatCount = repeatCount
+                state.scrollTargetColumn = id
                 return .none
             case .addTask:
-                state.scrollTargetColumn = state.path.count - 1
-                return .send(.bag(.create(.init(title: state.workingTaskTitle), state.path.last)))
+                @Dependency(\.uuid) var uuid
+                let id: ID = .uuid(uuid())
+                return .concatenate(
+                    .send(.bag(.create(id,
+                                       .init(title: state.workingTaskTitle),
+                                       state.path.last))),
+                    .send(.set(\.scrollTargetColumn, id))
+                )
+            case .bag, .binding, .destination:
+                return .none
             }
-
         }
+        .ifLet(\.$destination, action: \.destination)
     }
 }

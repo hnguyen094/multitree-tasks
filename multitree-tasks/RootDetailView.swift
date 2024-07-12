@@ -21,7 +21,7 @@ struct RootDetailView: View {
         Group {
             switch store.selectedIDs.count {
             case 0: Text("No node selected.")
-            case 2... : Text("Too many nodes selected.")
+            case 2... : Text("Many nodes selected.")
             case 1:
                 let selectedTask = store.bag.tasks[id: store.selectedIDs.first!]!
                 List(selectedTask.childrenIDs, id: \.self) { id in
@@ -33,19 +33,25 @@ struct RootDetailView: View {
         .navigationTitle(title)
     }
 
+    struct ColumnData: Identifiable, Hashable {
+        let id: StackElementID
+        let value: Root.ID
+    }
+
     @ViewBuilder
     var columns: some View {
         NavigationStack {
             ScrollView(.horizontal) {
                 HStack(spacing: 0) {
-                    ForEach(Array(store.path.enumerated()), id: \.offset) { index, id in
-                        column(column: index, id: id)
+                    let path = store.path
+                    ForEach(path.ids, id: \.self) { stackID in
+                        column(path, stackID: stackID)
                         Divider()
                     }
                 }
                 .scrollTargetLayout()
             }
-            .scrollPosition(id: $store.scrollTargetColumn.sending(\.scrollTargetChanged), anchor: .bottomTrailing)
+            .scrollPosition(id: $store.scrollTargetColumn, anchor: .bottomTrailing)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     LabeledContent("Root") {
@@ -53,29 +59,7 @@ struct RootDetailView: View {
                     }
                     .font(.headline)
                 }
-
-                ToolbarItemGroup(placement: .primaryAction) {
-
-                    Button("Add One", systemImage: "plus") {
-                        store.send(.addTaskRequest(true))
-                    }
-                    Button("Cross", systemImage: "multiply") {
-                        store.send(.changeWorkingTitle("Generated"))
-                        store.send(.addTask)
-                    }
-                    Button("Add Multiple", systemImage: "plus.square.on.square") {
-//                        store.send(.addTaskRequest(true))
-                    }
-                    Button("Search", systemImage: "magnifyingglass") { }
-                }
-                if !store.path.isEmpty {
-                    ToolbarItem(placement: .bottomBar) {
-                        VStack {
-                            Divider()
-                            toolbarTaskDetail
-                        }
-                    }
-                }
+                sharedToolbar
             }
         }
     }
@@ -90,7 +74,8 @@ struct RootDetailView: View {
     }
 
     @ViewBuilder
-    func column(column: Int, id: Root.ID) -> some View {
+    func column(_ path: StackState<Root.ID>, stackID: StackElementID) -> some View {
+        let id = path[id: stackID]!
         let children = store.bag.tasks[id: id]!.childrenIDs
         switch children.count {
         case 0:
@@ -99,11 +84,12 @@ struct RootDetailView: View {
                 .rotationEffect(.degrees(90))
         case let count:
             VStack {
-                let selected: Set<Root.ID> = (store.path.count - 1 > column
-                                           ? .init([store.path[column + 1]]): .init())
-
+                let index = path.firstIndex(of: id)!
+                let selected: Set<Root.ID> = (path.count - 1 > index
+                                              ? .init([path[index + 1]])
+                                              : .init())
                 List(children, id: \.self, selection: .constant(selected)) { id in
-                    item(column: column, id: id)
+                    item(stackID: stackID, id: id)
                 }
                 .listStyle(.plain)
                 .frame(idealWidth: 320, maxHeight: .infinity)
@@ -119,9 +105,9 @@ struct RootDetailView: View {
     }
 
     @ViewBuilder
-    func item(column: Int, id: Root.ID) -> some View {
+    func item(stackID: StackElementID, id: Root.ID) -> some View {
         Button {
-            store.send(.pathChanged(column, id), animation: .easeOut)
+            store.send(.itemSelected(stackID, id), animation: .default)
         } label: {
             let task = store.bag.tasks[id: id]!
             HStack {
@@ -135,6 +121,31 @@ struct RootDetailView: View {
                 Text(task.detail.title)
                 Spacer()
                 Text("(\(task.offspringIDs.count - 1))")
+            }
+        }
+    }
+
+    @ToolbarContentBuilder
+    var sharedToolbar: some ToolbarContent {
+        ToolbarItemGroup(placement: .primaryAction) {
+            Button("Add One", systemImage: "plus") {
+                store.send(.set(\.addTask, true))
+            }
+            Button("Cross", systemImage: "multiply") {
+                store.send(.set(\.workingTaskTitle, "Generated"))
+                store.send(.addTask)
+            }
+            Button("Add Multiple", systemImage: "plus.square.on.square") {
+//                        store.send(.set(\.addTask, true))
+            }
+            Button("Search", systemImage: "magnifyingglass") { }
+        }
+        if !store.path.isEmpty {
+            ToolbarItem(placement: .bottomBar) {
+                VStack {
+                    Divider()
+                    toolbarTaskDetail
+                }
             }
         }
     }
@@ -157,3 +168,4 @@ struct RootDetailView: View {
         }
     }
 }
+
