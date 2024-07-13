@@ -10,37 +10,15 @@ import ComposableArchitecture
 
 struct RootView: View {
     @Bindable var store: StoreOf<Root>
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+
     var body: some View {
-        let bag = store.scope(state: \.bag, action: \.bag)
-        NavigationSplitView {
-            List(selection: $store.selectedIDs) {
-                Section("Root Nodes") {
-                    ForEach(bag.roots, id: \.self) { id in
-                        Text(bag.tasks[id: id]!.detail.title)
-                    }
-                }
-                Section("Dated") {
-                    EmptyView()
-                }
+        Group {
+            switch horizontalSizeClass {
+            case .compact: PagesView(store: store)
+            case .regular, .none: ColumnsView(store: store)
+            @unknown default: PagesView(store: store)
             }
-
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button("Add", systemImage: "plus") {
-                        store.send(.set(\.addTask, true))
-                    }
-                }
-
-                ToolbarItem(placement: .primaryAction) {
-                    Button("Cross", systemImage: "multiply") {
-                        store.send(.set(\.workingTaskTitle, "Generated"))
-                        store.send(.addTask)
-                    }
-                }
-            }
-            .navigationTitle("Home")
-        } detail: {
-            RootDetailView(store: store)
         }
         .alert("Create Node", isPresented: $store.addTask) {
             TextField("Node Title", text: $store.workingTaskTitle)
@@ -60,6 +38,7 @@ struct RootView: View {
         }
     }
 
+    // unused
     @ViewBuilder
     var repeatCountSlider: some View {
         let binding = Binding<Float> {

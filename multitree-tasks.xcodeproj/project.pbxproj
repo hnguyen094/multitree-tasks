@@ -9,7 +9,9 @@
 /* Begin PBXBuildFile section */
 		B22A773E2C3F9D6200FE589D /* CheckboxStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22A773D2C3F9D6200FE589D /* CheckboxStyle.swift */; };
 		B25E5DE42C41782300495CC5 /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = B25E5DE32C41782300495CC5 /* Node.swift */; };
-		B292490F2C408493003319A0 /* RootDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B292490E2C408493003319A0 /* RootDetailView.swift */; };
+		B25E5DE62C41FDFB00495CC5 /* ColumnsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B25E5DE52C41FDFB00495CC5 /* ColumnsView.swift */; };
+		B25E5DE82C41FE6A00495CC5 /* PagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B25E5DE72C41FE6A00495CC5 /* PagesView.swift */; };
+		B25E5DEA2C41FEA300495CC5 /* SharedRootViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B25E5DE92C41FEA300495CC5 /* SharedRootViews.swift */; };
 		B29C852D2C3DC99F00452828 /* Root.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29C852C2C3DC99E00452828 /* Root.swift */; };
 		B2F48EDE2C35951E00D39F29 /* TaskNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2F48EDD2C35951600D39F29 /* TaskNode.swift */; };
 		B2F48EE22C3599F000D39F29 /* TaskNodeBag.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2F48EE12C3599E400D39F29 /* TaskNodeBag.swift */; };
@@ -23,7 +25,9 @@
 /* Begin PBXFileReference section */
 		B22A773D2C3F9D6200FE589D /* CheckboxStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxStyle.swift; sourceTree = "<group>"; };
 		B25E5DE32C41782300495CC5 /* Node.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Node.swift; sourceTree = "<group>"; };
-		B292490E2C408493003319A0 /* RootDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootDetailView.swift; sourceTree = "<group>"; };
+		B25E5DE52C41FDFB00495CC5 /* ColumnsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColumnsView.swift; sourceTree = "<group>"; };
+		B25E5DE72C41FE6A00495CC5 /* PagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PagesView.swift; sourceTree = "<group>"; };
+		B25E5DE92C41FEA300495CC5 /* SharedRootViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedRootViews.swift; sourceTree = "<group>"; };
 		B29C852C2C3DC99E00452828 /* Root.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Root.swift; sourceTree = "<group>"; };
 		B2F48EDD2C35951600D39F29 /* TaskNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskNode.swift; sourceTree = "<group>"; };
 		B2F48EE12C3599E400D39F29 /* TaskNodeBag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskNodeBag.swift; sourceTree = "<group>"; };
@@ -51,6 +55,10 @@
 			isa = PBXGroup;
 			children = (
 				B22A773D2C3F9D6200FE589D /* CheckboxStyle.swift */,
+				B2FB1C152C359220000A04B0 /* RootView.swift */,
+				B25E5DE52C41FDFB00495CC5 /* ColumnsView.swift */,
+				B25E5DE72C41FE6A00495CC5 /* PagesView.swift */,
+				B25E5DE92C41FEA300495CC5 /* SharedRootViews.swift */,
 			);
 			path = swiftui;
 			sourceTree = "<group>";
@@ -88,8 +96,6 @@
 				B22A773C2C3F9D4F00FE589D /* swiftui */,
 				B2F48EDC2C35950E00D39F29 /* tca */,
 				B2FB1C132C359220000A04B0 /* multitree_tasksApp.swift */,
-				B2FB1C152C359220000A04B0 /* RootView.swift */,
-				B292490E2C408493003319A0 /* RootDetailView.swift */,
 				B2FB1C172C359222000A04B0 /* Assets.xcassets */,
 				B2FB1C192C359222000A04B0 /* multitree_tasks.entitlements */,
 				B2FB1C1A2C359222000A04B0 /* Preview Content */,
@@ -184,10 +190,12 @@
 				B2F48EE22C3599F000D39F29 /* TaskNodeBag.swift in Sources */,
 				B2F48EDE2C35951E00D39F29 /* TaskNode.swift in Sources */,
 				B2FB1C162C359220000A04B0 /* RootView.swift in Sources */,
+				B25E5DE82C41FE6A00495CC5 /* PagesView.swift in Sources */,
+				B25E5DEA2C41FEA300495CC5 /* SharedRootViews.swift in Sources */,
 				B25E5DE42C41782300495CC5 /* Node.swift in Sources */,
 				B2FB1C142C359220000A04B0 /* multitree_tasksApp.swift in Sources */,
 				B22A773E2C3F9D6200FE589D /* CheckboxStyle.swift in Sources */,
-				B292490F2C408493003319A0 /* RootDetailView.swift in Sources */,
+				B25E5DE62C41FDFB00495CC5 /* ColumnsView.swift in Sources */,
 				B29C852D2C3DC99F00452828 /* Root.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
