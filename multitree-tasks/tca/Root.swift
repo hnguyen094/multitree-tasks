@@ -10,30 +10,16 @@ import Foundation
 
 @Reducer
 struct Root {
-    @ObservableState
     enum ID: Hashable {
         case uuid(UUID)
         case date(Date)
-    }
-
-    @Reducer
-    struct StackDisplayFeature {
-        typealias State = ID
-
-        enum Action {
-            case addChild
-            case edit
-            case move
-            case selectChild(ID)
-            // case delete
-        }
     }
 
     @ObservableState
     struct State {
         var bag: TaskNodeBag<ID>.State = .init()
         var selectedIDs: Set<ID> = .init()
-        var path: StackState<ID> = .init()
+        var path: StackState<NodeDisplay<ID>.State> = .init()
 
         var scrollTargetColumn: ID? = .none
         var addTask: Bool = false
@@ -43,12 +29,11 @@ struct Root {
 
     enum Action: BindableAction {
         case binding(BindingAction<State>)
-        case path(StackActionOf<StackDisplayFeature>)
+        case path(StackActionOf<NodeDisplay<ID>>)
 
         case bag(TaskNodeBag<ID>.Action)
-        case itemSelected(StackElementID, _ newID: ID)
 
-        case addTask
+        case addTask(_ parent: StackElementID?)
     }
 
     var body: some ReducerOf<Self> {
@@ -62,35 +47,26 @@ struct Root {
                 let ids = state.selectedIDs
                 state.path.removeAll()
                 if ids.count == 1 {
-                    state.path.append(ids.first!)
+                    state.path.append(.init(id: ids.first!))
                 }
                 return .none
-            case .itemSelected(let parentStackID, let id):
-                state.path.pop(to: parentStackID)
-                state.path.append(id)
-                state.scrollTargetColumn = id
-                return .none
-            case .addTask:
-                @Dependency(\.uuid) var uuid
-                let id: ID = .uuid(uuid())
-                return .concatenate(
-                    .send(.bag(.create(id,
-                                       .init(title: state.workingTaskTitle),
-                                       state.path.last))),
-                    .send(.set(\.scrollTargetColumn, id))
-                )
-            case .path(.element(id: let parentStackID, action: .addChild)):
+            case .addTask(let maybeParentStackID):
                 @Dependency(\.uuid) var uuid
                 let childID: ID = .uuid(uuid())
-                let parentID = state.path[id: parentStackID]
+                let parentID: Root.ID? = switch maybeParentStackID {
+                case let .some(parentStackID): state.path[id: parentStackID]?.id
+                case .none: .none
+                }
                 let detail: TaskNode<ID>.Detail = .init(title: state.workingTaskTitle)
                 return .run { send in
                     await send(.bag(.create(childID, detail, parentID)))
                     await send(.set(\.scrollTargetColumn, childID))
                 }
+            case .path(.element(id: let parentStackID, action: .addChild)):
+                return .send(.addTask(parentStackID))
             case let .path(.element(id: parentStackID, action: .selectChild(childID))):
                 state.path.pop(to: parentStackID)
-                state.path.append(childID)
+                state.path.append(.init(id: childID))
                 state.scrollTargetColumn = childID
                 return .none
             case .bag, .binding, .path:
@@ -98,7 +74,7 @@ struct Root {
             }
         }
         .forEach(\.path, action: \.path) {
-            StackDisplayFeature()
+            NodeDisplay<ID>()
         }
     }
 }

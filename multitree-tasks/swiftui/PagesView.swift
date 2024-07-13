@@ -14,7 +14,7 @@ struct PagesView: View {
         NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
             SharedRootViews.NavigationRoot(store: store)
         } destination: { node in
-            SharedRootViews.NodeDisplay(store: store, node: node, style: .pages)
+            SharedRootViews.NodeDisplayView(store: store, node: node, style: .pages)
                 .toolbar {
                     SharedRootViews.SharedToolbar(store: store)
                 }
@@ -23,7 +23,7 @@ struct PagesView: View {
     }
 
     var title: String {
-        if let lastID = store.path.last, let task = store.bag.tasks[id: lastID] {
+        if let last = store.path.last, let task = store.bag.tasks[id: last.id] {
             return task.detail.title
         }
         return ""

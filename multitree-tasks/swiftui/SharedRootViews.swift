@@ -38,7 +38,7 @@ struct SharedRootViews {
                 ToolbarItem(placement: .primaryAction) {
                     Button("Cross", systemImage: "multiply") {
                         store.send(.set(\.workingTaskTitle, "Generated"))
-                        store.send(.addTask)
+                        store.send(.addTask(.none))
                     }
                 }
             }
@@ -46,15 +46,15 @@ struct SharedRootViews {
         }
     }
 
-    struct NodeDisplay: View {
+    struct NodeDisplayView: View {
         @Bindable var store: StoreOf<Root>
-        @Bindable var node: StoreOf<Root.StackDisplayFeature>
+        @Bindable var node: StoreOf<NodeDisplay<Root.ID>>
         @State var style: Style
 
         var body: some View {
-            let id = node.state
+            let state = node.state
             let path = store.path
-            let children = store.bag.tasks[id: id]!.childrenIDs
+            let children = store.bag.tasks[id: state.id]!.childrenIDs
             switch children.count {
             case 0:
                 let rotation: Double = switch style {
@@ -66,9 +66,9 @@ struct SharedRootViews {
                     .rotationEffect(.degrees(rotation))
             case let count:
                 VStack {
-                    if let index = path.firstIndex(of: id) {
+                    if let index = path.firstIndex(of: state) {
                         let selected: Set<Root.ID> = (path.count - 1 > index
-                                                      ? .init([path[index + 1]])
+                                                      ? .init([path[index + 1].id])
                                                       : .init())
                         List(children, id: \.self, selection: .constant(selected)) { id in
                             item(id: id)
@@ -114,26 +114,22 @@ struct SharedRootViews {
 
         var body: some ToolbarContent {
             ToolbarItemGroup(placement: .primaryAction) {
+                let path = store.path
                 Button("Add One", systemImage: "plus") {
                     store.send(.set(\.addTask, true))
                 }
                 Button("Cross", systemImage: "multiply") {
                     store.send(.set(\.workingTaskTitle, "Generated"))
-                    let path = store.path
-                    switch path.count {
-                    case 0:
-                        store.send(.addTask)
-                    default:
+                    if let lastID = path.ids.last {
                         store.scope(state: \.path, action: \.path)
-                            .send(.element(id: path.ids.last!, action: .addChild))
+                            .send(.element(id: lastID, action: .addChild))
                     }
                 }
                 Button("Add Multiple", systemImage: "plus.square.on.square") {
-    //                        store.send(.set(\.addTask, true))
                 }
                 Button("Search", systemImage: "magnifyingglass") { }
             }
-            if let lastID = store.path.last, let task = store.bag.tasks[id: lastID] {
+            if let last = store.path.last, let task = store.bag.tasks[id: last.id] {
                 ToolbarItem(placement: .bottomBar) {
                     VStack {
                         Divider()
@@ -156,4 +152,29 @@ struct SharedRootViews {
             }
         }
     }
+
+//    struct AddTaskFormView: View {
+//        @Bindable var store: StoreOf<AddTaskForm>
+//
+//        var body: some View {
+//            List {
+//                LabeledContent("Title") {
+//                    TextField("Title", text: $store.title)
+//                }
+//            }
+//            .toolbar {
+//                ToolbarItem(placement: .primaryAction) {
+//                    Button("Create", systemImage: "checkmark") {
+//                        store.send(.submitButtonTapped)
+//                    }
+//                }
+//                ToolbarItem(placement: .cancellationAction) {
+//                    Button("Cancel", systemImage: "xmark", role: .cancel) {
+//                        store.send(.dismissButtonTapped)
+//                    }
+//                }
+//            }
+//            .navigationTitle("Node Creation")
+//        }
+//    }
 }
