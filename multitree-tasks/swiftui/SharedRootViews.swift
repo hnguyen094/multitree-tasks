@@ -46,15 +46,15 @@ struct SharedRootViews {
         }
     }
 
-    struct NodeDisplay: View {
+    struct NodeDisplayView: View {
         @Bindable var store: StoreOf<Root>
-        @Bindable var node: StoreOf<Root.StackDisplayFeature>
+        @Bindable var node: StoreOf<NodeDisplay<Root.ID>>
         @State var style: Style
 
         var body: some View {
-            let id = node.state
+            let state = node.state
             let path = store.path
-            let children = store.bag.tasks[id: id]!.childrenIDs
+            let children = store.bag.tasks[id: state.id]!.childrenIDs
             switch children.count {
             case 0:
                 let rotation: Double = switch style {
@@ -66,9 +66,9 @@ struct SharedRootViews {
                     .rotationEffect(.degrees(rotation))
             case let count:
                 VStack {
-                    if let index = path.firstIndex(of: id) {
+                    if let index = path.firstIndex(of: state) {
                         let selected: Set<Root.ID> = (path.count - 1 > index
-                                                      ? .init([path[index + 1]])
+                                                      ? .init([path[index + 1].id])
                                                       : .init())
                         List(children, id: \.self, selection: .constant(selected)) { id in
                             item(id: id)
@@ -129,7 +129,7 @@ struct SharedRootViews {
                 }
                 Button("Search", systemImage: "magnifyingglass") { }
             }
-            if let lastID = store.path.last, let task = store.bag.tasks[id: lastID] {
+            if let last = store.path.last, let task = store.bag.tasks[id: last.id] {
                 ToolbarItem(placement: .bottomBar) {
                     VStack {
                         Divider()

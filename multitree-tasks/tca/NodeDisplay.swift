@@ -42,7 +42,7 @@ extension NodeDisplay {
     struct AddForm {
         @ObservableState
         struct State: Equatable {
-            let parentID: Root.ID
+            let parentID: ID
             var title: String = ""
             // TODO: add repeat, toggles, or reparenting info here
         }

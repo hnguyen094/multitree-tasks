@@ -33,7 +33,9 @@ struct ColumnsView: View {
                     ForEach(path.ids, id: \.self) { stackID in
                         if let nodeStore = store.scope(state: \.path[id: stackID],
                                                        action: \.path[id: stackID]) {
-                            SharedRootViews.NodeDisplay(store: store, node: nodeStore, style: .columns)
+                            SharedRootViews.NodeDisplayView(store: store,
+                                                            node: nodeStore,
+                                                            style: .columns)
                             Divider()
                         }
                     }

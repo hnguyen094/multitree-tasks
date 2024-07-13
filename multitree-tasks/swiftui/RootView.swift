@@ -31,7 +31,7 @@ struct RootView: View {
                 store.send(.set(\.addTask, false))
             }
         } message: {
-            if let last = store.path.last, let task = store.bag.tasks[id: last] {
+            if let last = store.path.last, let task = store.bag.tasks[id: last.id] {
                 Text("Add a node to **\(task.detail.title).**")
             } else {
                 Text("Add a node to **Root**.")
