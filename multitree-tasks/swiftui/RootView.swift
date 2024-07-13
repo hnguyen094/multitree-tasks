@@ -23,15 +23,16 @@ struct RootView: View {
         .alert("Create Node", isPresented: $store.addTask) {
             TextField("Node Title", text: $store.workingTaskTitle)
             Button("Create") {
-                store.send(.addTask)
+                store.scope(state: \.path, action: \.path)
+                    .send(.element(id: store.path.ids.last!, action: .addChild))
             }
             .disabled(store.workingTaskTitle.isEmpty)
             Button("Cancel", role: .cancel) {
                 store.send(.set(\.addTask, false))
             }
         } message: {
-            if let last = store.path.last {
-                Text("Add a node to **\(store.bag.tasks[id: last]!.detail.title).**")
+            if let last = store.path.last, let task = store.bag.tasks[id: last] {
+                Text("Add a node to **\(task.detail.title).**")
             } else {
                 Text("Add a node to **Root**.")
             }

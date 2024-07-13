@@ -48,7 +48,7 @@ struct Root {
         case bag(TaskNodeBag<ID>.Action)
         case itemSelected(StackElementID, _ newID: ID)
 
-        case addTask
+        case addTask(_ parent: StackElementID?)
     }
 
     var body: some ReducerOf<Self> {
@@ -70,24 +70,20 @@ struct Root {
                 state.path.append(id)
                 state.scrollTargetColumn = id
                 return .none
-            case .addTask:
-                @Dependency(\.uuid) var uuid
-                let id: ID = .uuid(uuid())
-                return .concatenate(
-                    .send(.bag(.create(id,
-                                       .init(title: state.workingTaskTitle),
-                                       state.path.last))),
-                    .send(.set(\.scrollTargetColumn, id))
-                )
-            case .path(.element(id: let parentStackID, action: .addChild)):
+            case .addTask(let maybeParentStackID):
                 @Dependency(\.uuid) var uuid
                 let childID: ID = .uuid(uuid())
-                let parentID = state.path[id: parentStackID]
+                let parentID: Root.ID? = switch maybeParentStackID {
+                case let .some(parentStackID): state.path[id: parentStackID]
+                case .none: .none
+                }
                 let detail: TaskNode<ID>.Detail = .init(title: state.workingTaskTitle)
                 return .run { send in
                     await send(.bag(.create(childID, detail, parentID)))
                     await send(.set(\.scrollTargetColumn, childID))
                 }
+            case .path(.element(id: let parentStackID, action: .addChild)):
+                return .send(.addTask(parentStackID))
             case let .path(.element(id: parentStackID, action: .selectChild(childID))):
                 state.path.pop(to: parentStackID)
                 state.path.append(childID)

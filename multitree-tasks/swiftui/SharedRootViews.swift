@@ -38,7 +38,7 @@ struct SharedRootViews {
                 ToolbarItem(placement: .primaryAction) {
                     Button("Cross", systemImage: "multiply") {
                         store.send(.set(\.workingTaskTitle, "Generated"))
-                        store.send(.addTask)
+                        store.send(.addTask(.none))
                     }
                 }
             }
@@ -114,22 +114,18 @@ struct SharedRootViews {
 
         var body: some ToolbarContent {
             ToolbarItemGroup(placement: .primaryAction) {
+                let path = store.path
                 Button("Add One", systemImage: "plus") {
                     store.send(.set(\.addTask, true))
                 }
                 Button("Cross", systemImage: "multiply") {
                     store.send(.set(\.workingTaskTitle, "Generated"))
-                    let path = store.path
-                    switch path.count {
-                    case 0:
-                        store.send(.addTask)
-                    default:
+                    if let lastID = path.ids.last {
                         store.scope(state: \.path, action: \.path)
-                            .send(.element(id: path.ids.last!, action: .addChild))
+                            .send(.element(id: lastID, action: .addChild))
                     }
                 }
                 Button("Add Multiple", systemImage: "plus.square.on.square") {
-    //                        store.send(.set(\.addTask, true))
                 }
                 Button("Search", systemImage: "magnifyingglass") { }
             }
@@ -156,4 +152,29 @@ struct SharedRootViews {
             }
         }
     }
+
+//    struct AddTaskFormView: View {
+//        @Bindable var store: StoreOf<AddTaskForm>
+//
+//        var body: some View {
+//            List {
+//                LabeledContent("Title") {
+//                    TextField("Title", text: $store.title)
+//                }
+//            }
+//            .toolbar {
+//                ToolbarItem(placement: .primaryAction) {
+//                    Button("Create", systemImage: "checkmark") {
+//                        store.send(.submitButtonTapped)
+//                    }
+//                }
+//                ToolbarItem(placement: .cancellationAction) {
+//                    Button("Cancel", systemImage: "xmark", role: .cancel) {
+//                        store.send(.dismissButtonTapped)
+//                    }
+//                }
+//            }
+//            .navigationTitle("Node Creation")
+//        }
+//    }
 }
