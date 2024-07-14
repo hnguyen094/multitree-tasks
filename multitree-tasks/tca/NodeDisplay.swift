@@ -23,16 +23,20 @@ struct NodeDisplay<ID> where ID: Hashable {
 
     enum Action {
         case addChild
-        case edit
-        case move
         case selectChild(ID)
         case destination(PresentationAction<Destination.Action>)
     }
 
     var body: some ReducerOf<Self> {
         Reduce { state, action in
-            return .none
-        }        
+            switch action {
+            case .addChild:
+                state.destination = .add(.init(parentID: state.id))
+                return .none
+            case .selectChild, .destination:
+                return .none
+            }
+        }
         .ifLet(\.$destination, action: \.destination)
     }
 }
@@ -42,15 +46,19 @@ extension NodeDisplay {
     struct AddForm {
         @ObservableState
         struct State: Equatable {
-            let parentID: ID
+            let parentID: ID?
             var title: String = ""
-            // TODO: add repeat, toggles, or reparenting info here
+            var repeatCount: Int = 1
+
+            var detail: TaskNode<ID>.Detail {
+                .init(title: self.title)
+            }
         }
 
         enum Action: BindableAction {
             case binding(BindingAction<State>)
             case dismissButtonTapped
-            case submitButtonTapped
+            case submitButtonTapped // parent handles submission and dismiss
         }
 
         @Dependency(\.dismiss) var dismiss
@@ -62,9 +70,8 @@ extension NodeDisplay {
                     return .run { _ in
                         await dismiss()
                     }
-                case .submitButtonTapped: // let parent handle submission
+                case .submitButtonTapped, .binding:
                     return .none
-                case .binding: return .none
                 }
             }
         }

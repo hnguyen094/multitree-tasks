@@ -12,44 +12,31 @@ struct RootView: View {
     @Bindable var store: StoreOf<Root>
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
 
+    enum Style {
+        case pages
+        case columns
+    }
+
     var body: some View {
         Group {
             switch horizontalSizeClass {
-            case .compact: PagesView(store: store)
-            case .regular, .none: ColumnsView(store: store)
-            @unknown default: PagesView(store: store)
-            }
-        }
-        .alert("Create Node", isPresented: $store.addTask) {
-            TextField("Node Title", text: $store.workingTaskTitle)
-            Button("Create") {
-                store.scope(state: \.path, action: \.path)
-                    .send(.element(id: store.path.ids.last!, action: .addChild))
-            }
-            .disabled(store.workingTaskTitle.isEmpty)
-            Button("Cancel", role: .cancel) {
-                store.send(.set(\.addTask, false))
-            }
-        } message: {
-            if let last = store.path.last, let task = store.bag.tasks[id: last.id] {
-                Text("Add a node to **\(task.detail.title).**")
-            } else {
-                Text("Add a node to **Root**.")
+            case .compact: Pages(store: store)
+            case .regular, .none: Columns(store: store)
+            @unknown default: Pages(store: store)
             }
         }
     }
+}
 
-    // unused
-    @ViewBuilder
-    var repeatCountSlider: some View {
-        let binding = Binding<Float> {
-            Float(store.repeatCount)
-        } set: {
-            store.send(.set(\.repeatCount, Int($0)))
-        }
-        Slider(value: binding, in: 1...100) {
-            Text("Repeat")
-        }
+private struct StyleKey: EnvironmentKey {
+    static let defaultValue: RootView.Style = .columns
+
+}
+
+extension EnvironmentValues {
+    var style: RootView.Style {
+        get { self[StyleKey.self] }
+        set { self[StyleKey.self] = newValue }
     }
 }
 
